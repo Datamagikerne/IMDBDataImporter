@@ -13,7 +13,7 @@ namespace IMDBDataImporter.Inserters
         {
             List<Title> titles = new List<Title>();
 
-            foreach (string line in File.ReadLines(titles_data).Skip(1).Take(1000))
+            foreach (string line in File.ReadLines(titles_data).Skip(1).Take(10000))
             {
                 string[] values = line.Split("\t");
                 if (values.Length == 9)

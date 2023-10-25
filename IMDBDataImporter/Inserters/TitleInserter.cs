@@ -9,6 +9,36 @@ namespace IMDBDataImporter.Inserters
 {
     public class TitleInserter : Inserter
     {
+        public static void ReadData(string ConnString,  string titles_data)
+        {
+            List<Title> titles = new List<Title>();
+
+            foreach (string line in File.ReadLines(titles_data).Skip(1).Take(1000))
+            {
+                string[] values = line.Split("\t");
+                if (values.Length == 9)
+                {
+                    titles.Add(new Title(
+                        values[0], values[1], values[2], values[3],
+                        ConvertToBool(values[4]), ConvertToInt(values[5]),
+                        ConvertToInt(values[6]), ConvertToInt(values[7]), values[8]
+                        ));
+                }
+            }
+            Console.WriteLine(titles.Count);
+            DateTime before = DateTime.Now;
+            SqlConnection sqlConn = new SqlConnection(ConnString);
+            sqlConn.Open();
+
+            InsertData(sqlConn, titles);
+            GenreInserter.InsertData(sqlConn, titles);
+
+            sqlConn.Close();
+
+            DateTime after = DateTime.Now;
+
+            Console.WriteLine("Tid: " + (after - before));
+        }
         public static void InsertData(SqlConnection sqlConn, List<Title> titles)
         {
             DataTable titleTable = new DataTable("Titles");
@@ -40,10 +70,5 @@ namespace IMDBDataImporter.Inserters
             bulkCopy.BulkCopyTimeout = 0;
             bulkCopy.WriteToServer(titleTable);
         }
-
-
-
-        
-
     }
 }

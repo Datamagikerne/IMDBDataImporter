@@ -16,45 +16,29 @@ namespace IMDBDataImporter.Inserters
                     genres.Add(genre);
                 }
             }
-            foreach (string genre in genres)
+            using (SqlCommand insertGenreCmd = new SqlCommand(
+            "INSERT INTO Genres (genreName) OUTPUT INSERTED.genre_id VALUES (@genreName)", sqlConn))
             {
-                SqlCommand sqlComm = new SqlCommand(
-                    "INSERT INTO Genres(genreName)" +
-                    "OUTPUT INSERTED.genre_id " +
-                    "VALUES ('" + genre + "')", sqlConn);
-
-                try
+                foreach (string genre in genres)
                 {
-                    SqlDataReader reader = sqlComm.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        int newId = (int)reader["genre_id"];
-                        genreDict.Add(genre, newId);
-                    }
-                    reader.Close();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(sqlComm.CommandText, ex);
+                    insertGenreCmd.Parameters.AddWithValue("@genreName", genre);
+                    int newId = (int)insertGenreCmd.ExecuteScalar();
+                    genreDict.Add(genre, newId);
+                    insertGenreCmd.Parameters.Clear();
                 }
             }
 
-            foreach (Title myTitle in titleList)
+            using (SqlCommand insertTitleGenreCmd = new SqlCommand(
+            "INSERT INTO Titles_Genres (tconst, genre_id) VALUES (@tconst, @genreId)", sqlConn))
             {
-                foreach (string genre in myTitle.genres)
+                foreach (Title myTitle in titleList)
                 {
-                    SqlCommand sqlComm = new SqlCommand(
-                        "INSERT INTO Titles_Genres (tconst, genre_id)" +
-                        " VALUES " +
-                        "('" + myTitle.tconst + "', '"
-                        + genreDict[genre] + "')", sqlConn);
-                    try
+                    foreach (string genre in myTitle.genres)
                     {
-                        sqlComm.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(sqlComm.CommandText, ex);
+                        insertTitleGenreCmd.Parameters.AddWithValue("@tconst", myTitle.tconst);
+                        insertTitleGenreCmd.Parameters.AddWithValue("@genreId", genreDict[genre]);
+                        insertTitleGenreCmd.ExecuteNonQuery();
+                        insertTitleGenreCmd.Parameters.Clear();
                     }
                 }
             }

@@ -16,46 +16,32 @@ namespace IMDBDataImporter.Inserters
                     professions.Add(profession);
                 }
             }
-            foreach (string profession in professions)
+            using (SqlCommand insertProfCmd = new SqlCommand(
+            "INSERT INTO Professions(professionName) OUTPUT INSERTED.profession_id VALUES (@professionName)", sqlConn))
             {
-                SqlCommand sqlComm = new SqlCommand(
-                    "INSERT INTO Professions(professionName)" +
-                    "OUTPUT INSERTED.profession_id " +
-                    "VALUES ('" + profession + "')", sqlConn);
-
-                try
+                foreach (string prof in professions)
                 {
-                    SqlDataReader reader = sqlComm.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        int newId = (int)reader["profession_id"];
-                        professionsDict.Add(profession, newId);
-                    }
-                    reader.Close();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(sqlComm.CommandText, ex);
+                    insertProfCmd.Parameters.AddWithValue("@professionName", prof);
+                    int newId = (int)insertProfCmd.ExecuteScalar();
+                    professionsDict.Add(prof, newId);
+                    insertProfCmd.Parameters.Clear();
                 }
             }
-
-            foreach (Name myName in nameList)
+            using (SqlCommand insertNameProfCmd = new SqlCommand(
+            "INSERT INTO Names_Professions (nconst, profession_id) VALUES (@nconst, @profession_id)", sqlConn))
             {
-                foreach (string profession in myName.primaryProfession)
+                foreach (Name myName in nameList)
                 {
-                    string query = "INSERT INTO Names_Professions (nconst, profession_id) VALUES ('" + myName.nconst + "', '" + professionsDict[profession] + "')";
-
-                    SqlCommand sqlComm = new SqlCommand(query, sqlConn);
-                    try
+                    foreach (string prof in myName.primaryProfession)
                     {
-                        sqlComm.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(sqlComm.CommandText, ex);
+                        insertNameProfCmd.Parameters.AddWithValue("@nconst", myName.nconst);
+                        insertNameProfCmd.Parameters.AddWithValue("@profession_id", professionsDict[prof]);
+                        insertNameProfCmd.ExecuteNonQuery();
+                        insertNameProfCmd.Parameters.Clear();
                     }
                 }
             }
+            
         }
     }
 }

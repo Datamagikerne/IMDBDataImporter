@@ -1,15 +1,9 @@
 ﻿using IMDBDataImporter.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IMDBDataImporter.Inserters
 {
-    public class GenreInserter 
+    public class GenreInserter
     {
         public static void InsertData(SqlConnection sqlConn, List<Title> titleList)
         {
@@ -43,7 +37,6 @@ namespace IMDBDataImporter.Inserters
                 {
                     throw new Exception(sqlComm.CommandText, ex);
                 }
-
             }
 
             foreach (Title myTitle in titleList)
@@ -64,9 +57,7 @@ namespace IMDBDataImporter.Inserters
                         throw new Exception(sqlComm.CommandText, ex);
                     }
                 }
-
             }
         }
-        
     }
 }

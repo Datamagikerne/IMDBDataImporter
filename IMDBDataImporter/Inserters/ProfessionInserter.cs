@@ -1,10 +1,5 @@
 ﻿using IMDBDataImporter.Models;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IMDBDataImporter.Inserters
 {
@@ -42,7 +37,6 @@ namespace IMDBDataImporter.Inserters
                 {
                     throw new Exception(sqlComm.CommandText, ex);
                 }
-
             }
 
             foreach (Name myName in nameList)
@@ -50,7 +44,6 @@ namespace IMDBDataImporter.Inserters
                 foreach (string profession in myName.primaryProfession)
                 {
                     string query = "INSERT INTO Names_Professions (nconst, profession_id) VALUES ('" + myName.nconst + "', '" + professionsDict[profession] + "')";
-                    //Console.WriteLine("Executing query: " + query);
 
                     SqlCommand sqlComm = new SqlCommand(query, sqlConn);
                     try
@@ -62,7 +55,6 @@ namespace IMDBDataImporter.Inserters
                         throw new Exception(sqlComm.CommandText, ex);
                     }
                 }
-
             }
         }
     }

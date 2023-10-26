@@ -1,10 +1,11 @@
 ﻿using System.Data;
 
-
 namespace IMDBDataImporter.Inserters
 {
     public abstract class Inserter
     {
+        public static int amountToTake = 50000;
+
         public static void FillParameter(DataRow row, string columnName, object? value)
         {
             if (value != null)
@@ -16,6 +17,7 @@ namespace IMDBDataImporter.Inserters
                 row[columnName] = DBNull.Value;
             }
         }
+
         public static bool ConvertToBool(string input)
         {
             if (input == "0")
@@ -40,7 +42,6 @@ namespace IMDBDataImporter.Inserters
             {
                 return int.Parse(input);
             }
-
         }
     }
 }

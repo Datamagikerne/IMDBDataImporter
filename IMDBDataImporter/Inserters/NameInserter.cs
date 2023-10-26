@@ -1,12 +1,6 @@
 ﻿using IMDBDataImporter.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Data.SqlClient;
 
 namespace IMDBDataImporter.Inserters
 {
@@ -16,7 +10,7 @@ namespace IMDBDataImporter.Inserters
         {
             List<Name> names = new List<Name>();
 
-            foreach (string line in File.ReadLines(names_data).Skip(1).Take(10000))
+            foreach (string line in File.ReadLines(names_data).Skip(1).Take(amountToTake))
             {
                 string[] values = line.Split("\t");
                 if (values.Length == 6)
@@ -27,7 +21,7 @@ namespace IMDBDataImporter.Inserters
                         ));
                 }
             }
-            Console.WriteLine(names.Count);
+            Console.WriteLine("name_data count: " + names.Count);
             DateTime before = DateTime.Now;
             SqlConnection sqlConn = new SqlConnection(ConnString);
             sqlConn.Open();
@@ -41,6 +35,7 @@ namespace IMDBDataImporter.Inserters
 
             Console.WriteLine("Tid: " + (after - before));
         }
+
         public static void InsertData(SqlConnection sqlConn, List<Name> names)
         {
             DataTable nameTable = new DataTable("Titles");

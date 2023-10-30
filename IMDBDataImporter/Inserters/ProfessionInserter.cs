@@ -28,22 +28,7 @@ namespace IMDBDataImporter.Inserters
                     insertProfCmd.Parameters.Clear();
                 }
             }
-            InsertNameProf(sqlConn, nameList, professionsDict);
-            //using (SqlCommand insertNameProfCmd = new SqlCommand(
-            //"INSERT INTO Names_Professions (nconst, profession_id) VALUES (@nconst, @profession_id)", sqlConn))
-            //{
-            //    foreach (Name myName in nameList)
-            //    {
-            //        foreach (string prof in myName.primaryProfession)
-            //        {
-            //            insertNameProfCmd.Parameters.AddWithValue("@nconst", myName.nconst);
-            //            insertNameProfCmd.Parameters.AddWithValue("@profession_id", professionsDict[prof]);
-            //            insertNameProfCmd.ExecuteNonQuery();
-            //            insertNameProfCmd.Parameters.Clear();
-            //        }
-            //    }
-            //}
-            
+            InsertNameProf(sqlConn, nameList, professionsDict);            
         }
         public static void InsertNameProf(SqlConnection sqlConn, List<Name> nameList, Dictionary<string, int> professionsDict)
         {

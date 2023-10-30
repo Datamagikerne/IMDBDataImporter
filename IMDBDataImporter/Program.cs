@@ -3,9 +3,7 @@
 //husk at ændre connection string og stigen til data dokumenter
 //Bruger nuget packet System.Data.SqlClient
 //amount to take i Inserter Klassen kan gøres mindre hvis det tager for lang tid
-//50000 tager ca 2.30 min for mig
-string ConnString = "server=localhost;database=IMDB;" +
-            "user id=sa;password=;TrustServerCertificate=True";
+string ConnString = "server=localhost;database=IMDB;user id=sa;password=;TrustServerCertificate=True";
 string titles_data = "C:\\temp\\IMDBDataSæt\\titles_data.tsv";
 string names_data = "C:\\temp\\IMDBDataSæt\\name_data.tsv";
 string crew_data = "C:\\temp\\IMDBDataSæt\\crew_data.tsv";

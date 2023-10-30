@@ -1,10 +1,26 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace IMDBDataImporter.Inserters
 {
     public abstract class Inserter
     {
-        public static int amountToTake = 50000;
+        public static int amountToTake = 100000;
+
+        public static HashSet<string> GetValidTconst(SqlConnection sqlConn)
+        {
+            HashSet<string> validTconsts = new HashSet<string>();
+            SqlCommand getValidTconst = new SqlCommand("SELECT tconst FROM Titles", sqlConn);
+            using (SqlDataReader reader = getValidTconst.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    validTconsts.Add(reader.GetString(0));
+                }
+            }
+
+            return validTconsts;
+        }
 
         public static void FillParameter(DataRow row, string columnName, object? value)
         {

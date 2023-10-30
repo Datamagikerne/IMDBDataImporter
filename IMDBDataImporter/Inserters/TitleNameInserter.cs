@@ -15,29 +15,19 @@ namespace IMDBDataImporter.Inserters
                 titleNamesTable.Columns.Add("tconst", typeof(string));
                 titleNamesTable.Columns.Add("nconst", typeof(string));
 
+
+                HashSet<string> validTconsts = GetValidTconst(sqlConn);
+
                 foreach (Name name in nameList)
                 {
                     foreach (string tcon in name.knownForTitles)
                     {
-                        SqlCommand sqlCheckComm = new SqlCommand(
-                    "SELECT tconst FROM Titles WHERE tconst = '" + tcon + "'", sqlConn);
-
-                        try
+                        if (validTconsts.Contains(tcon))
                         {
-                            SqlDataReader reader = sqlCheckComm.ExecuteReader();
-                            if (reader.Read())
-                            {
-                                DataRow titleNameRow = titleNamesTable.NewRow();
-                                FillParameter(titleNameRow, "tconst", tcon);
-                                FillParameter(titleNameRow, "nconst", name.nconst);
-                                titleNamesTable.Rows.Add(titleNameRow);
-                            }
-
-                            reader.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(sqlCheckComm.CommandText, ex);
+                            DataRow titleNameRow = titleNamesTable.NewRow();
+                            FillParameter(titleNameRow, "tconst", tcon);
+                            FillParameter(titleNameRow, "nconst", name.nconst);
+                            titleNamesTable.Rows.Add(titleNameRow);
                         }
                     }
                 }

@@ -1,9 +1,10 @@
 ﻿using IMDBDataImporter.Models;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace IMDBDataImporter.Inserters
 {
-    public class ProfessionInserter
+    public class ProfessionInserter : Inserter
     {
         public static void InsertData(SqlConnection sqlConn, List<Name> nameList)
         {
@@ -27,21 +28,52 @@ namespace IMDBDataImporter.Inserters
                     insertProfCmd.Parameters.Clear();
                 }
             }
-            using (SqlCommand insertNameProfCmd = new SqlCommand(
-            "INSERT INTO Names_Professions (nconst, profession_id) VALUES (@nconst, @profession_id)", sqlConn))
+            InsertNameProf(sqlConn, nameList, professionsDict);
+            //using (SqlCommand insertNameProfCmd = new SqlCommand(
+            //"INSERT INTO Names_Professions (nconst, profession_id) VALUES (@nconst, @profession_id)", sqlConn))
+            //{
+            //    foreach (Name myName in nameList)
+            //    {
+            //        foreach (string prof in myName.primaryProfession)
+            //        {
+            //            insertNameProfCmd.Parameters.AddWithValue("@nconst", myName.nconst);
+            //            insertNameProfCmd.Parameters.AddWithValue("@profession_id", professionsDict[prof]);
+            //            insertNameProfCmd.ExecuteNonQuery();
+            //            insertNameProfCmd.Parameters.Clear();
+            //        }
+            //    }
+            //}
+            
+        }
+        public static void InsertNameProf(SqlConnection sqlConn, List<Name> nameList, Dictionary<string, int> professionsDict)
+        {
+            try
             {
-                foreach (Name myName in nameList)
+                DataTable nameProfTable = new DataTable("Names_professions");
+                nameProfTable.Columns.Add("names_professions_id", typeof(int)).AutoIncrement = true;
+                nameProfTable.Columns.Add("nconst", typeof(string));
+                nameProfTable.Columns.Add("profession_id", typeof(int));
+
+                foreach (Name name in nameList)
                 {
-                    foreach (string prof in myName.primaryProfession)
+                    foreach (string genre in name.primaryProfession)
                     {
-                        insertNameProfCmd.Parameters.AddWithValue("@nconst", myName.nconst);
-                        insertNameProfCmd.Parameters.AddWithValue("@profession_id", professionsDict[prof]);
-                        insertNameProfCmd.ExecuteNonQuery();
-                        insertNameProfCmd.Parameters.Clear();
+                        DataRow titleGenreRow = nameProfTable.NewRow();
+                        FillParameter(titleGenreRow, "nconst", name.nconst);
+                        FillParameter(titleGenreRow, "profession_id", professionsDict[genre]);
+                        nameProfTable.Rows.Add(titleGenreRow);
                     }
                 }
+                SqlBulkCopy bulkCopy = new SqlBulkCopy(sqlConn, SqlBulkCopyOptions.KeepNulls, null);
+
+                bulkCopy.DestinationTableName = "Names_professions";
+                bulkCopy.BulkCopyTimeout = 0;
+                bulkCopy.WriteToServer(nameProfTable);
             }
-            
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
     }
 }

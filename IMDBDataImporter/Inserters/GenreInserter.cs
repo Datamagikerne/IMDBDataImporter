@@ -30,21 +30,6 @@ namespace IMDBDataImporter.Inserters
                 }
             }
             InsertTitleGenre(sqlConn, titleList, genreDict);
-
-            //using (SqlCommand insertTitleGenreCmd = new SqlCommand(
-            //"INSERT INTO Titles_Genres (tconst, genre_id) VALUES (@tconst, @genreId)", sqlConn))
-            //{
-            //    foreach (Title myTitle in titleList)
-            //    {
-            //        foreach (string genre in myTitle.genres)
-            //        {
-            //            insertTitleGenreCmd.Parameters.AddWithValue("@tconst", myTitle.tconst);
-            //            insertTitleGenreCmd.Parameters.AddWithValue("@genreId", genreDict[genre]);
-            //            insertTitleGenreCmd.ExecuteNonQuery();
-            //            insertTitleGenreCmd.Parameters.Clear();
-            //        }
-            //    }
-            //}
         }
         public static void InsertTitleGenre(SqlConnection sqlConn, List<Title> titleList, Dictionary<string, int> genreDict)
         {

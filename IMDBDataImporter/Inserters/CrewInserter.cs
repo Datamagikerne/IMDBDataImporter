@@ -35,8 +35,8 @@ namespace IMDBDataImporter.Inserters
 
                     if (validTconsts.Contains(values[0]))
                     {
-                        InsertNconstValues(values[1], values[0], titleNamesTable, validNconsts, existingTitleNames);
-                        InsertNconstValues(values[2], values[0], titleNamesTable, validNconsts, existingTitleNames);
+                        InsertTitleNamesValues(values[1], values[0], titleNamesTable, validNconsts, existingTitleNames);
+                        InsertTitleNamesValues(values[2], values[0], titleNamesTable, validNconsts, existingTitleNames);
                     }
                 }
 
@@ -50,7 +50,7 @@ namespace IMDBDataImporter.Inserters
             Console.WriteLine("Time elapsed: " + (after - before));
         }
 
-        private static void InsertNconstValues(string value, string tconst, DataTable titleNamesTable, HashSet<string> validNconsts, HashSet<string> existingTitleNames)
+        private static void InsertTitleNamesValues(string value, string tconst, DataTable titleNamesTable, HashSet<string> validNconsts, HashSet<string> existingTitleNames)
         {
             string[] nconstValues = value.Split('\t');
 
@@ -69,35 +69,6 @@ namespace IMDBDataImporter.Inserters
                 }
             }
         }
-        public static HashSet<string> GetExistingTitleNames(SqlConnection sqlConn)
-        {
-            HashSet<string> existingTitleNames = new HashSet<string>();
-            SqlCommand sqlCheckTNComm = new SqlCommand("SELECT tconst, nconst FROM Title_Names", sqlConn);
-            using (SqlDataReader titleNamesReader = sqlCheckTNComm.ExecuteReader())
-            {
-                while (titleNamesReader.Read())
-                {
-                    string tconstValue = titleNamesReader.GetString(0);
-                    string nconstValue = titleNamesReader.GetString(1);
-                    existingTitleNames.Add(tconstValue + nconstValue);
-                }
-            }
-            return existingTitleNames;
-        }
-
-        public static HashSet<string> GetValidNconsts(SqlConnection sqlConn)
-        {
-            HashSet<string> validNconsts = new HashSet<string>();
-            SqlCommand getValidNconst = new SqlCommand("SELECT nconst FROM Names", sqlConn);
-            using (SqlDataReader reader = getValidNconst.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    validNconsts.Add(reader.GetString(0));
-                }
-            }
-
-            return validNconsts;
-        }
+        
     }
 }

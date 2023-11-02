@@ -7,6 +7,37 @@ namespace IMDBDataImporter.Inserters
     {
         public static int amountToTake = 100000;
 
+        public static HashSet<string> GetExistingTitleNames(SqlConnection sqlConn)
+        {
+            HashSet<string> existingTitleNames = new HashSet<string>();
+            SqlCommand sqlCheckTNComm = new SqlCommand("SELECT tconst, nconst FROM Title_Names", sqlConn);
+            using (SqlDataReader titleNamesReader = sqlCheckTNComm.ExecuteReader())
+            {
+                while (titleNamesReader.Read())
+                {
+                    string tconstValue = titleNamesReader.GetString(0);
+                    string nconstValue = titleNamesReader.GetString(1);
+                    existingTitleNames.Add(tconstValue + nconstValue);
+                }
+            }
+            return existingTitleNames;
+        }
+
+        public static HashSet<string> GetValidNconsts(SqlConnection sqlConn)
+        {
+            HashSet<string> validNconsts = new HashSet<string>();
+            SqlCommand getValidNconst = new SqlCommand("SELECT nconst FROM Names", sqlConn);
+            using (SqlDataReader reader = getValidNconst.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    validNconsts.Add(reader.GetString(0));
+                }
+            }
+
+            return validNconsts;
+        }
+
         public static HashSet<string> GetValidTconst(SqlConnection sqlConn)
         {
             HashSet<string> validTconsts = new HashSet<string>();

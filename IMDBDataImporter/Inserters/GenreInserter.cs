@@ -23,6 +23,10 @@ namespace IMDBDataImporter.Inserters
             {
                 foreach (string genre in genres)
                 {
+                    if (genre.ToLower() == @"\n")
+                    {
+                        continue;
+                    }
                     insertGenreCmd.Parameters.AddWithValue("@genreName", genre);
                     int newId = (int)insertGenreCmd.ExecuteScalar();
                     genreDict.Add(genre, newId);
@@ -44,6 +48,10 @@ namespace IMDBDataImporter.Inserters
                 {
                     foreach(string genre in title.genres)
                     {
+                        if (genre.ToLower() == @"\n")
+                        {
+                            continue;
+                        }
                         DataRow titleGenreRow = titleGenresTable.NewRow();
                         FillParameter(titleGenreRow, "tconst", title.tconst);
                         FillParameter(titleGenreRow, "genre_id", genreDict[genre]);
